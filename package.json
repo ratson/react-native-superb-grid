@@ -2,9 +2,11 @@
   "name": "react-native-superb-grid",
   "version": "0.0.0",
   "description": "Responsive Grid View for React Native",
-  "main": "index.js",
-  "types": "index.d.ts",
+  "main": "lib/index.js",
+  "types": "lib/index.d.ts",
   "scripts": {
+    "prepublishOnly": "npm run build",
+    "build": "tsc",
     "lint": "eslint ."
   },
   "peerDependencies": {
@@ -26,11 +28,13 @@
   "repository": "ratson/react-native-superb-grid",
   "license": "MIT",
   "devDependencies": {
+    "@tsconfig/react-native": "^3.0.5",
     "eslint": "^5.16.0",
     "eslint-config-airbnb": "^17.1.1",
     "eslint-plugin-import": "^2.25.4",
     "eslint-plugin-jsx-a11y": "^6.5.1",
-    "eslint-plugin-react": "^7.27.1"
+    "eslint-plugin-react": "^7.27.1",
+    "typescript": "5.4.5"
   },
   "dependencies": {
     "prop-types": "^15.6.2"

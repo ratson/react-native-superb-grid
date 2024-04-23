@@ -8,7 +8,7 @@ import useRows from './hooks/useRows';
 
 
 const FlatGrid = memo(
-  forwardRef((props, ref) => {
+  forwardRef((props: any, ref) => {
     const {
       style,
       spacing,
@@ -82,6 +82,7 @@ const FlatGrid = memo(
         data={rows}
         ref={ref}
         extraData={totalDimension}
+        // @ts-ignore
         renderItem={({ item, index }) => renderRow({
           rowItems: item,
           rowIndex: index,
@@ -112,6 +113,7 @@ const FlatGrid = memo(
 
 FlatGrid.displayName = 'FlatGrid';
 
+// @ts-ignore
 FlatGrid.propTypes = {
   renderItem: PropTypes.func.isRequired,
   // eslint-disable-next-line react/forbid-prop-types
@@ -135,6 +137,7 @@ FlatGrid.propTypes = {
   customFlatList: PropTypes.elementType,
 };
 
+// @ts-ignore
 FlatGrid.defaultProps = {
   fixed: false,
   itemDimension: 120,

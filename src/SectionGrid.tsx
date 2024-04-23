@@ -10,7 +10,7 @@ import {
 } from './utils';
 
 const SectionGrid = memo(
-  forwardRef((props, ref) => {
+  forwardRef((props: any, ref) => {
     const {
       sections,
       style,
@@ -136,6 +136,7 @@ const SectionGrid = memo(
     );
 
     const { containerStyle, containerFullWidthStyle, rowStyle } = useMemo(
+      // @ts-ignore
       () => generateStyles({
         itemDimension,
         containerDimension,
@@ -159,6 +160,7 @@ const SectionGrid = memo(
 
         return {
           ...section,
+          // @ts-ignore
           renderItem: ({ item, index, section: s }) => renderRow({
             renderItem,
             rowItems: item,
@@ -220,8 +222,10 @@ const SectionGrid = memo(
 
 SectionGrid.displayName = 'SectionGrid';
 
+// @ts-ignore
 SectionGrid.propTypes = {
   renderItem: PropTypes.func.isRequired,
+  // @ts-ignore
   sections: PropTypes.arrayOf(PropTypes.shape()).isRequired,
   itemDimension: PropTypes.number,
   fixed: PropTypes.bool,
@@ -241,6 +245,7 @@ SectionGrid.propTypes = {
   onItemsPerRowChange: PropTypes.func,
 };
 
+// @ts-ignore
 SectionGrid.defaultProps = {
   fixed: false,
   itemDimension: 120,

@@ -8,7 +8,7 @@ import useRows from './hooks/useRows';
 
 
 const SimpleGrid = memo(
-  forwardRef((props, ref) => {
+  forwardRef((props: any, ref) => {
     const {
       style,
       spacing,
@@ -96,6 +96,7 @@ const SimpleGrid = memo(
 
 SimpleGrid.displayName = 'SimpleGrid';
 
+// @ts-ignore
 SimpleGrid.propTypes = {
   renderItem: PropTypes.func.isRequired,
   // eslint-disable-next-line react/forbid-prop-types
@@ -124,6 +125,7 @@ SimpleGrid.propTypes = {
   onItemsPerRowChange: PropTypes.func,
 };
 
+// @ts-ignore
 SimpleGrid.defaultProps = {
   fixed: false,
   itemDimension: 120,

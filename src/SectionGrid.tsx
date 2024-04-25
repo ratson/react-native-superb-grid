@@ -1,16 +1,40 @@
-import React, {
-  forwardRef, memo, useCallback, useEffect, useMemo, useState,
-} from 'react';
-import {
-  View, Dimensions, SectionList,
-} from 'react-native';
-import PropTypes from 'prop-types';
-import {
-  generateStyles, calculateDimensions, chunkArray, getAdjustedTotalDimensions,
-} from './utils';
+import type React from 'react';
+import { forwardRef, memo, useCallback, useEffect, useMemo, useState } from 'react';
+import { Dimensions, SectionList, type SectionListProps, type SectionListRenderItemInfo, View } from 'react-native';
+import { type CommonProps, calculateDimensions, chunkArray, generateStyles, getAdjustedTotalDimensions } from './utils';
 
-const SectionGrid = memo(
-  forwardRef((props: any, ref) => {
+export type SectionGridRenderItemInfo<ItemT> = SectionListRenderItemInfo<ItemT> & {
+  rowIndex: number;
+};
+
+export type SectionGridRenderItem<ItemT> = (info: SectionGridRenderItemInfo<ItemT>) => React.ReactElement | null;
+
+export type SectionItem<ItemType> = {
+  title?: string;
+  data: ItemType[];
+  renderItem?: SectionGridRenderItem<ItemType>;
+};
+
+// Original section list component props
+type SectionGridAllowedProps<ItemType = unknown> = Omit<
+  SectionListProps<ItemType>,
+  //  This prop doesn't affect the SectionGrid, which only scrolls vertically.
+  'horizontal' | 'sections' | 'renderItem'
+>;
+
+export interface SectionGridProps<ItemType = unknown> extends SectionGridAllowedProps<ItemType>, CommonProps<ItemType> {
+  sections: SectionItem<ItemType>[];
+
+  renderItem?: SectionGridRenderItem<ItemType>;
+
+  /**
+   * Overwrites SectionList with custom interface
+   */
+  customSectionList?: typeof SectionList;
+}
+
+const SectionGrid = memo<SectionGridProps>(
+  forwardRef((props, ref) => {
     const {
       sections,
       style,
@@ -30,7 +54,25 @@ const SectionGrid = memo(
       customSectionList: SectionListComponent = SectionList,
       onItemsPerRowChange,
       ...restProps
-    } = props;
+    } = {
+      fixed: false,
+      itemDimension: 120,
+      spacing: 10,
+      style: {},
+      additionalRowStyle: undefined,
+      itemContainerStyle: undefined,
+      staticDimension: undefined,
+      onLayout: null,
+      listKey: undefined,
+      maxDimension: undefined,
+      invertedRow: false,
+      keyExtractor: null,
+      maxItemsPerRow: undefined,
+      adjustGridToStyles: false,
+      customSectionList: undefined,
+      onItemsPerRowChange: null,
+      ...props,
+    };
 
     const [totalDimension, setTotalDimension] = useState(() => {
       let defaultTotalDimension = staticDimension;
@@ -54,7 +96,11 @@ const SectionGrid = memo(
           let { width: newTotalDimension } = e.nativeEvent.layout || {};
 
           newTotalDimension = getAdjustedTotalDimensions({
-            totalDimension: newTotalDimension, maxDimension, contentContainerStyle: restProps.contentContainerStyle, style, adjustGridToStyles,
+            totalDimension: newTotalDimension,
+            maxDimension,
+            contentContainerStyle: restProps.contentContainerStyle,
+            style,
+            adjustGridToStyles,
           });
 
           if (totalDimension !== newTotalDimension && newTotalDimension > 0) {
@@ -67,22 +113,11 @@ const SectionGrid = memo(
           onLayout(e);
         }
       },
-      [staticDimension, maxDimension, totalDimension, onLayout, adjustGridToStyles],
+      [staticDimension, maxDimension, totalDimension, onLayout, adjustGridToStyles, restProps.contentContainerStyle, style],
     );
 
     const renderRow = useCallback(
-      ({
-        renderItem,
-        rowItems,
-        rowIndex,
-        section,
-        itemsPerRow,
-        rowStyle,
-        separators,
-        isFirstRow,
-        containerStyle,
-        containerFullWidthStyle,
-      }) => {
+      ({ renderItem, rowItems, rowIndex, section, itemsPerRow, rowStyle, separators, isFirstRow, containerStyle, containerFullWidthStyle }) => {
         // Add spacing below section header
         let additionalRowStyle = {};
         if (isFirstRow) {
@@ -91,7 +126,7 @@ const SectionGrid = memo(
           };
         }
 
-        const hasFullWidthItem = !!rowItems.find(i => i._fullWidth);
+        const hasFullWidthItem = !!rowItems.find((i) => i._fullWidth);
 
         return (
           <View style={[rowStyle, additionalRowStyle, externalRowStyle, hasFullWidthItem ? { flexDirection: 'column', paddingBottom: 0 } : {}]}>
@@ -100,11 +135,7 @@ const SectionGrid = memo(
 
               return (
                 <View
-                  key={
-                    keyExtractor
-                      ? keyExtractor(item, rowIndex * itemsPerRow + i)
-                      : `item_${rowIndex * itemsPerRow + i}`
-                  }
+                  key={keyExtractor ? keyExtractor(item, rowIndex * itemsPerRow + i) : `item_${rowIndex * itemsPerRow + i}`}
                   style={[item._fullWidth ? containerFullWidthStyle : containerStyle, itemContainerStyle]}
                 >
                   {renderItem({
@@ -124,27 +155,29 @@ const SectionGrid = memo(
     );
 
     const { containerDimension, itemsPerRow, fixedSpacing } = useMemo(
-      () => calculateDimensions({
-        itemDimension,
-        staticDimension,
-        totalDimension,
-        spacing,
-        fixed,
-        maxItemsPerRow,
-      }),
+      () =>
+        calculateDimensions({
+          itemDimension,
+          staticDimension,
+          totalDimension,
+          spacing,
+          fixed,
+          maxItemsPerRow,
+        }),
       [itemDimension, staticDimension, totalDimension, spacing, fixed, maxItemsPerRow],
     );
 
     const { containerStyle, containerFullWidthStyle, rowStyle } = useMemo(
       // @ts-ignore
-      () => generateStyles({
-        itemDimension,
-        containerDimension,
-        spacing,
-        fixedSpacing,
-        fixed,
-        itemsPerRow,
-      }),
+      () =>
+        generateStyles({
+          itemDimension,
+          containerDimension,
+          spacing,
+          fixedSpacing,
+          fixed,
+          itemsPerRow,
+        }),
       [itemDimension, containerDimension, itemsPerRow, spacing, fixedSpacing, fixed],
     );
 
@@ -153,7 +186,7 @@ const SectionGrid = memo(
         let chunkedData = chunkArray(section.data, itemsPerRow);
 
         if (invertedRow) {
-          chunkedData = chunkedData.map($0 => $0.reverse());
+          chunkedData = chunkedData.map(($0) => $0.reverse());
         }
 
         const renderItem = section.renderItem || originalRenderItem;
@@ -161,28 +194,23 @@ const SectionGrid = memo(
         return {
           ...section,
           // @ts-ignore
-          renderItem: ({ item, index, section: s }) => renderRow({
-            renderItem,
-            rowItems: item,
-            rowIndex: index,
-            section: s,
-            isFirstRow: index === 0,
-            itemsPerRow,
-            rowStyle,
-            containerStyle,
-            containerFullWidthStyle,
-          }),
+          renderItem: ({ item, index, section: s }) =>
+            renderRow({
+              renderItem,
+              rowItems: item,
+              rowIndex: index,
+              section: s,
+              isFirstRow: index === 0,
+              itemsPerRow,
+              rowStyle,
+              containerStyle,
+              containerFullWidthStyle,
+            }),
           data: chunkedData,
           originalData: section.data,
         };
       },
-      [
-        itemsPerRow,
-        originalRenderItem,
-        renderRow,
-        rowStyle,
-        containerStyle,
-      ],
+      [itemsPerRow, originalRenderItem, renderRow, rowStyle, containerStyle, containerFullWidthStyle, invertedRow],
     );
 
     const groupedSections = sections.map(groupSectionsFunc);
@@ -190,9 +218,7 @@ const SectionGrid = memo(
     const localKeyExtractor = useCallback(
       (rowItems, index) => {
         if (keyExtractor) {
-          return rowItems
-            .map((rowItem, rowItemIndex) => keyExtractor(rowItem, rowItemIndex))
-            .join('_');
+          return rowItems.map((rowItem, rowItemIndex) => keyExtractor(rowItem, rowItemIndex)).join('_');
         }
         return `row_${index}`;
       },
@@ -203,7 +229,7 @@ const SectionGrid = memo(
       if (onItemsPerRowChange) {
         onItemsPerRowChange(itemsPerRow);
       }
-    }, [itemsPerRow]);
+    }, [itemsPerRow, onItemsPerRowChange]);
 
     return (
       <SectionListComponent
@@ -219,51 +245,6 @@ const SectionGrid = memo(
   }),
 );
 
-
 SectionGrid.displayName = 'SectionGrid';
-
-// @ts-ignore
-SectionGrid.propTypes = {
-  renderItem: PropTypes.func.isRequired,
-  // @ts-ignore
-  sections: PropTypes.arrayOf(PropTypes.shape()).isRequired,
-  itemDimension: PropTypes.number,
-  fixed: PropTypes.bool,
-  spacing: PropTypes.number,
-  style: PropTypes.oneOfType([PropTypes.object, PropTypes.number, PropTypes.array]),
-  additionalRowStyle: PropTypes.oneOfType([PropTypes.object, PropTypes.number, PropTypes.array]),
-  itemContainerStyle: PropTypes.oneOfType([PropTypes.object, PropTypes.number, PropTypes.array]),
-  staticDimension: PropTypes.number,
-  onLayout: PropTypes.func,
-  maxDimension: PropTypes.number,
-  listKey: PropTypes.string,
-  keyExtractor: PropTypes.func,
-  invertedRow: PropTypes.bool,
-  maxItemsPerRow: PropTypes.number,
-  adjustGridToStyles: PropTypes.bool,
-  customSectionList: PropTypes.elementType,
-  onItemsPerRowChange: PropTypes.func,
-};
-
-// @ts-ignore
-SectionGrid.defaultProps = {
-  fixed: false,
-  itemDimension: 120,
-  spacing: 10,
-  style: {},
-  additionalRowStyle: undefined,
-  itemContainerStyle: undefined,
-  staticDimension: undefined,
-  onLayout: null,
-  listKey: undefined,
-  maxDimension: undefined,
-  invertedRow: false,
-  keyExtractor: null,
-  maxItemsPerRow: undefined,
-  adjustGridToStyles: false,
-  customSectionList: undefined,
-  onItemsPerRowChange: null,
-};
-
 
 export default SectionGrid;

@@ -1,14 +1,39 @@
-import React, { forwardRef, memo, useMemo } from 'react';
-import { View } from 'react-native';
-import PropTypes from 'prop-types';
-import { generateStyles } from './utils';
-import useRenderRow from './hooks/useRenderRow';
+import type React from 'react';
+import { forwardRef, memo, useMemo } from 'react';
+import { View, type ViewProps } from 'react-native';
+import type { FlatGridProps } from './FlatGrid';
 import useDimensions from './hooks/useDimensions';
+import useRenderRow from './hooks/useRenderRow';
 import useRows from './hooks/useRows';
+import { generateStyles } from './utils';
 
+export type SimpleGridProps<ItemType = unknown> = React.PropsWithoutRef<
+  Pick<
+    FlatGridProps<ItemType>,
+    | 'data'
+    | 'fixed'
+    | 'itemDimension'
+    | 'spacing'
+    | 'style'
+    | 'additionalRowStyle'
+    | 'itemContainerStyle'
+    | 'staticDimension'
+    | 'horizontal'
+    | 'onLayout'
+    | 'keyExtractor'
+    | 'maxDimension'
+    | 'invertedRow'
+    | 'maxItemsPerRow'
+    | 'adjustGridToStyles'
+    | 'onItemsPerRowChange'
+    | 'renderItem'
+  >
+> &
+  React.RefAttributes<View> &
+  ViewProps;
 
-const SimpleGrid = memo(
-  forwardRef((props: any, ref) => {
+const SimpleGrid = memo<SimpleGridProps>(
+  forwardRef((props, ref) => {
     const {
       style,
       spacing,
@@ -23,25 +48,39 @@ const SimpleGrid = memo(
       invertedRow,
       onItemsPerRowChange,
       ...restProps
-    } = props;
+    } = {
+      fixed: false,
+      itemDimension: 120,
+      spacing: 10,
+      style: {},
+      additionalRowStyle: undefined,
+      itemContainerStyle: undefined,
+      staticDimension: undefined,
+      horizontal: false,
+      onLayout: null,
+      keyExtractor: null,
+      listKey: undefined,
+      maxDimension: undefined,
+      invertedRow: false,
+      maxItemsPerRow: undefined,
+      adjustGridToStyles: false,
+      onItemsPerRowChange: undefined,
+      ...props,
+    };
 
-    const {
-      onLayout,
-      itemsPerRow,
-      containerDimension,
-      fixedSpacing,
-    } = useDimensions(props);
+    const { onLayout, itemsPerRow, containerDimension, fixedSpacing } = useDimensions(props);
 
     const { containerStyle, containerFullWidthStyle, rowStyle } = useMemo(
-      () => generateStyles({
-        horizontal,
-        itemDimension,
-        containerDimension,
-        spacing,
-        fixedSpacing,
-        fixed,
-        itemsPerRow,
-      }),
+      () =>
+        generateStyles({
+          horizontal,
+          itemDimension,
+          containerDimension,
+          spacing,
+          fixedSpacing,
+          fixed,
+          itemsPerRow,
+        }),
       [horizontal, itemDimension, containerDimension, itemsPerRow, spacing, fixedSpacing, fixed],
     );
 
@@ -61,7 +100,6 @@ const SimpleGrid = memo(
       horizontal,
       invertedRow,
     });
-
 
     return (
       <View
@@ -93,57 +131,6 @@ const SimpleGrid = memo(
   }),
 );
 
-
 SimpleGrid.displayName = 'SimpleGrid';
-
-// @ts-ignore
-SimpleGrid.propTypes = {
-  renderItem: PropTypes.func.isRequired,
-  // eslint-disable-next-line react/forbid-prop-types
-  data: PropTypes.arrayOf(PropTypes.any).isRequired,
-  itemDimension: PropTypes.number,
-  // eslint-disable-next-line react/no-unused-prop-types
-  maxDimension: PropTypes.number,
-  fixed: PropTypes.bool,
-  spacing: PropTypes.number,
-  style: PropTypes.oneOfType([PropTypes.object, PropTypes.number, PropTypes.array]),
-  additionalRowStyle: PropTypes.oneOfType([PropTypes.object, PropTypes.number, PropTypes.array]),
-  itemContainerStyle: PropTypes.oneOfType([PropTypes.object, PropTypes.number, PropTypes.array]),
-  // eslint-disable-next-line react/no-unused-prop-types
-  staticDimension: PropTypes.number,
-  horizontal: PropTypes.bool,
-  // eslint-disable-next-line react/no-unused-prop-types
-  onLayout: PropTypes.func,
-  keyExtractor: PropTypes.func,
-  // eslint-disable-next-line react/no-unused-prop-types
-  listKey: PropTypes.string,
-  invertedRow: PropTypes.bool,
-  // eslint-disable-next-line react/no-unused-prop-types
-  maxItemsPerRow: PropTypes.number,
-  // eslint-disable-next-line react/no-unused-prop-types
-  adjustGridToStyles: PropTypes.bool,
-  onItemsPerRowChange: PropTypes.func,
-};
-
-// @ts-ignore
-SimpleGrid.defaultProps = {
-  fixed: false,
-  itemDimension: 120,
-  spacing: 10,
-  style: {},
-  additionalRowStyle: undefined,
-  itemContainerStyle: undefined,
-  staticDimension: undefined,
-  horizontal: false,
-  onLayout: null,
-  keyExtractor: null,
-  listKey: undefined,
-  maxDimension: undefined,
-  invertedRow: false,
-  maxItemsPerRow: undefined,
-  adjustGridToStyles: false,
-  onItemsPerRowChange: undefined,
-};
-
 
 export default SimpleGrid;

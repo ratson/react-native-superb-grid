@@ -35,8 +35,5 @@
     "eslint-plugin-jsx-a11y": "^6.5.1",
     "eslint-plugin-react": "^7.27.1",
     "typescript": "5.4.5"
-  },
-  "dependencies": {
-    "prop-types": "^15.6.2"
   }
 }

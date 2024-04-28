@@ -5,6 +5,15 @@
 
 Responsive Grid View for React Native.
 
+## Features
+
+This is a fork of [react-native-super-grid](https://github.com/saleel/react-native-super-grid) with the following differences,
+
+- Rewrite in TypeScript
+- Remove 'prop-types` dependency
+- Remove usage of `defaultProps`
+- Various fixes to React hooks usages
+
 ## Getting Started
 
 This library export two components - FlatGrid (similar to FlatList) and SectionGrid (similar to SectionList). Both components render a Grid layout that adapts itself to various screen resolutions.

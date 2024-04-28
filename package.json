@@ -13,6 +13,14 @@
     "react": ">=16.8.6",
     "react-native": ">=0.59.0"
   },
+  "files": [
+    "*.ts",
+    "*.md",
+    "lib",
+    "src",
+    "tsconfig.json",
+    "!**/*.tsbuildinfo"
+  ],
   "keywords": [
     "react",
     "react-native",

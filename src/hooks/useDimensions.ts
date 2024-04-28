@@ -2,7 +2,7 @@ import { useCallback, useMemo, useState } from 'react';
 import { Dimensions } from 'react-native';
 import { calculateDimensions, getAdjustedTotalDimensions } from '../utils';
 
-const useDimensions = (props) => {
+function useDimensions(props) {
   const {
     staticDimension,
     maxDimension,
@@ -83,6 +83,6 @@ const useDimensions = (props) => {
     itemsPerRow,
     fixedSpacing,
   };
-};
+}
 
 export default useDimensions;

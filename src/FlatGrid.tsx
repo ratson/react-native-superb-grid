@@ -21,50 +21,31 @@ interface FlatGridBaseProps<ItemType> extends FlatListProps<ItemType>, CommonPro
   customFlatList?: typeof FlatList;
 }
 
-export type FlatGridProps<ItemType = unknown> = FlatGridBaseProps<ItemType> & React.RefAttributes<FlatList<ItemType>>;
+export type FlatGridProps<ItemType = unknown> = React.PropsWithoutRef<FlatGridBaseProps<ItemType>> & React.RefAttributes<FlatList<ItemType>>;
 
 const FlatGrid = memo<FlatGridProps>(
   forwardRef((props, ref) => {
     const {
-      style,
-      spacing,
-      fixed,
+      style = {},
+      spacing = 10,
+      fixed = false,
       data,
-      itemDimension,
+      itemDimension = 120,
       renderItem,
-      horizontal,
-      onLayout: _,
+      horizontal = false,
+      onLayout: _ = null,
       staticDimension,
       maxDimension,
       additionalRowStyle: externalRowStyle,
       itemContainerStyle,
-      keyExtractor: customKeyExtractor,
-      invertedRow,
+      keyExtractor: customKeyExtractor = null,
+      invertedRow = false,
       maxItemsPerRow,
-      adjustGridToStyles,
+      adjustGridToStyles = false,
       customFlatList: FlatListComponent = FlatList,
       onItemsPerRowChange,
       ...restProps
-    } = {
-      fixed: false,
-      itemDimension: 120,
-      spacing: 10,
-      style: {},
-      additionalRowStyle: undefined,
-      itemContainerStyle: undefined,
-      staticDimension: undefined,
-      horizontal: false,
-      onLayout: null,
-      keyExtractor: null,
-      listKey: undefined,
-      maxDimension: undefined,
-      invertedRow: false,
-      maxItemsPerRow: undefined,
-      adjustGridToStyles: false,
-      onItemsPerRowChange: undefined,
-      customFlatList: undefined,
-      ...props,
-    };
+    } = props;
 
     const { onLayout, totalDimension, itemsPerRow, containerDimension, fixedSpacing } = useDimensions(props);
 
@@ -105,7 +86,6 @@ const FlatGrid = memo<FlatGridProps>(
         data={rows}
         ref={ref}
         extraData={totalDimension}
-        // @ts-ignore
         renderItem={({ item, index }) =>
           renderRow({
             rowItems: item,

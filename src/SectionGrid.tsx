@@ -1,6 +1,6 @@
 import type React from 'react';
 import { forwardRef, memo, useCallback, useEffect, useMemo, useState } from 'react';
-import { Dimensions, SectionList, type SectionListProps, type SectionListRenderItemInfo, View } from 'react-native';
+import { Dimensions, SectionList, type SectionListProps, type SectionListRenderItemInfo, type StyleProp, View, type ViewStyle } from 'react-native';
 import { type CommonProps, calculateDimensions, chunkArray, generateStyles, getAdjustedTotalDimensions } from './utils';
 
 export type SectionGridRenderItemInfo<ItemT> = SectionListRenderItemInfo<ItemT> & {
@@ -22,7 +22,7 @@ type SectionGridAllowedProps<ItemType = unknown> = Omit<
   'horizontal' | 'sections' | 'renderItem'
 >;
 
-export interface SectionGridProps<ItemType = unknown> extends SectionGridAllowedProps<ItemType>, CommonProps<ItemType> {
+interface SectionGridBaseProps<ItemType = unknown> extends SectionGridAllowedProps<ItemType>, CommonProps<ItemType> {
   sections: SectionItem<ItemType>[];
 
   renderItem?: SectionGridRenderItem<ItemType>;
@@ -33,46 +33,30 @@ export interface SectionGridProps<ItemType = unknown> extends SectionGridAllowed
   customSectionList?: typeof SectionList;
 }
 
+export type SectionGridProps<ItemType = unknown> = React.PropsWithoutRef<SectionGridBaseProps<ItemType>> & React.RefAttributes<SectionList<ItemType>>;
+
 const SectionGrid = memo<SectionGridProps>(
   forwardRef((props, ref) => {
     const {
       sections,
-      style,
-      spacing,
-      fixed,
-      itemDimension,
+      style = {},
+      spacing = 10,
+      fixed = false,
+      itemDimension = 120,
       staticDimension,
       maxDimension,
       renderItem: originalRenderItem,
-      keyExtractor,
-      onLayout,
+      keyExtractor = null,
+      onLayout = null,
       additionalRowStyle: externalRowStyle,
       itemContainerStyle,
-      invertedRow,
+      invertedRow = false,
       maxItemsPerRow,
-      adjustGridToStyles,
+      adjustGridToStyles = false,
       customSectionList: SectionListComponent = SectionList,
-      onItemsPerRowChange,
+      onItemsPerRowChange = null,
       ...restProps
-    } = {
-      fixed: false,
-      itemDimension: 120,
-      spacing: 10,
-      style: {},
-      additionalRowStyle: undefined,
-      itemContainerStyle: undefined,
-      staticDimension: undefined,
-      onLayout: null,
-      listKey: undefined,
-      maxDimension: undefined,
-      invertedRow: false,
-      keyExtractor: null,
-      maxItemsPerRow: undefined,
-      adjustGridToStyles: false,
-      customSectionList: undefined,
-      onItemsPerRowChange: null,
-      ...props,
-    };
+    } = props;
 
     const [totalDimension, setTotalDimension] = useState(() => {
       let defaultTotalDimension = staticDimension;
@@ -117,7 +101,29 @@ const SectionGrid = memo<SectionGridProps>(
     );
 
     const renderRow = useCallback(
-      ({ renderItem, rowItems, rowIndex, section, itemsPerRow, rowStyle, separators, isFirstRow, containerStyle, containerFullWidthStyle }) => {
+      ({
+        renderItem,
+        rowItems,
+        rowIndex,
+        section,
+        itemsPerRow,
+        rowStyle,
+        separators,
+        isFirstRow,
+        containerStyle,
+        containerFullWidthStyle,
+      }: {
+        renderItem;
+        rowItems;
+        rowIndex: number;
+        section;
+        itemsPerRow: number;
+        rowStyle: StyleProp<ViewStyle>;
+        separators?: unknown;
+        isFirstRow: boolean;
+        containerStyle: StyleProp<ViewStyle>;
+        containerFullWidthStyle: StyleProp<ViewStyle>;
+      }) => {
         // Add spacing below section header
         let additionalRowStyle = {};
         if (isFirstRow) {
@@ -168,7 +174,6 @@ const SectionGrid = memo<SectionGridProps>(
     );
 
     const { containerStyle, containerFullWidthStyle, rowStyle } = useMemo(
-      // @ts-ignore
       () =>
         generateStyles({
           itemDimension,
@@ -193,7 +198,6 @@ const SectionGrid = memo<SectionGridProps>(
 
         return {
           ...section,
-          // @ts-ignore
           renderItem: ({ item, index, section: s }) =>
             renderRow({
               renderItem,
@@ -216,7 +220,7 @@ const SectionGrid = memo<SectionGridProps>(
     const groupedSections = sections.map(groupSectionsFunc);
 
     const localKeyExtractor = useCallback(
-      (rowItems, index) => {
+      (rowItems: Array<unknown>, index: number) => {
         if (keyExtractor) {
           return rowItems.map((rowItem, rowItemIndex) => keyExtractor(rowItem, rowItemIndex)).join('_');
         }

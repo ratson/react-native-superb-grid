@@ -1,9 +1,44 @@
-import React, { useCallback } from 'react';
-import { View } from 'react-native';
+import type React from 'react';
+import { useCallback } from 'react';
+import { type StyleProp, View, type ViewStyle } from 'react-native';
 
-const useRenderRow = ({ renderItem, spacing, keyExtractor, externalRowStyle, itemContainerStyle, horizontal, invertedRow }) =>
-  useCallback(
-    ({ rowItems, rowIndex, separators, isLastRow, itemsPerRow, rowStyle, containerStyle, containerFullWidthStyle }) => {
+function useRenderRow({
+  renderItem,
+  spacing,
+  keyExtractor,
+  externalRowStyle,
+  itemContainerStyle,
+  horizontal,
+  invertedRow,
+}: {
+  renderItem: (props: { item; index: number; separators; rowIndex: number }) => React.ReactElement;
+  spacing: number;
+  keyExtractor: (item, index: number) => string;
+  externalRowStyle: StyleProp<ViewStyle>;
+  itemContainerStyle: StyleProp<ViewStyle>;
+  horizontal: boolean;
+  invertedRow: boolean;
+}) {
+  return useCallback(
+    ({
+      rowItems,
+      rowIndex,
+      separators,
+      isLastRow,
+      itemsPerRow,
+      rowStyle,
+      containerStyle,
+      containerFullWidthStyle,
+    }: {
+      rowItems: Array<{ _fullWidth: number }>;
+      rowIndex: number;
+      separators?: unknown;
+      isLastRow: boolean;
+      itemsPerRow: number;
+      rowStyle: typeof externalRowStyle;
+      containerStyle: typeof itemContainerStyle;
+      containerFullWidthStyle: StyleProp<ViewStyle>;
+    }) => {
       // To make up for the top padding
       let additionalRowStyle = {};
       if (isLastRow) {
@@ -39,5 +74,6 @@ const useRenderRow = ({ renderItem, spacing, keyExtractor, externalRowStyle, ite
     },
     [renderItem, spacing, keyExtractor, externalRowStyle, itemContainerStyle, horizontal, invertedRow],
   );
+}
 
 export default useRenderRow;

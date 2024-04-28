@@ -110,7 +110,23 @@ function getAdjustedTotalDimensions({ totalDimension, maxDimension, contentConta
   return adjustedTotalDimension;
 }
 
-function generateStyles({ itemDimension, containerDimension, spacing, fixed, horizontal, fixedSpacing, itemsPerRow }) {
+function generateStyles({
+  itemDimension,
+  containerDimension,
+  spacing,
+  fixed,
+  horizontal,
+  fixedSpacing,
+  itemsPerRow,
+}: {
+  itemDimension;
+  containerDimension;
+  spacing: number;
+  fixed: boolean;
+  horizontal?: boolean;
+  fixedSpacing: number;
+  itemsPerRow: number;
+}) {
   let rowStyle: ViewStyle = {
     flexDirection: 'row',
     paddingLeft: fixed ? fixedSpacing : spacing,
@@ -124,7 +140,7 @@ function generateStyles({ itemDimension, containerDimension, spacing, fixed, hor
     marginRight: fixed ? fixedSpacing : spacing,
   };
 
-  const containerFullWidthStyle = {
+  const containerFullWidthStyle: StyleProp<ViewStyle> = {
     flexDirection: 'column',
     justifyContent: 'center',
     width: containerDimension * itemsPerRow - spacing,

@@ -35,36 +35,23 @@ export type SimpleGridProps<ItemType = unknown> = React.PropsWithoutRef<
 const SimpleGrid = memo<SimpleGridProps>(
   forwardRef((props, ref) => {
     const {
-      style,
-      spacing,
-      fixed,
+      style = {},
+      spacing = 10,
+      fixed = false,
       data,
-      itemDimension,
+      itemDimension = 120,
       renderItem,
-      horizontal,
+      horizontal = false,
       additionalRowStyle: externalRowStyle,
       itemContainerStyle,
-      keyExtractor: customKeyExtractor,
-      invertedRow,
+      keyExtractor: customKeyExtractor = null,
+      invertedRow = false,
       onItemsPerRowChange,
       ...restProps
     } = {
-      fixed: false,
-      itemDimension: 120,
-      spacing: 10,
-      style: {},
-      additionalRowStyle: undefined,
-      itemContainerStyle: undefined,
-      staticDimension: undefined,
-      horizontal: false,
       onLayout: null,
-      keyExtractor: null,
       listKey: undefined,
-      maxDimension: undefined,
-      invertedRow: false,
-      maxItemsPerRow: undefined,
       adjustGridToStyles: false,
-      onItemsPerRowChange: undefined,
       ...props,
     };
 

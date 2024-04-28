@@ -1,5 +1,5 @@
 import FlatGrid from './FlatGrid';
-import SimpleGrid from './SimpleGrid';
 import SectionGrid from './SectionGrid';
+import SimpleGrid from './SimpleGrid';
 
 export { FlatGrid, SimpleGrid, SectionGrid };

@@ -1,10 +1,6 @@
-import { useState, useCallback, useMemo } from 'react';
+import { useCallback, useMemo, useState } from 'react';
 import { Dimensions } from 'react-native';
-import {
-  getAdjustedTotalDimensions,
-  calculateDimensions,
-} from '../utils';
-
+import { calculateDimensions, getAdjustedTotalDimensions } from '../utils';
 
 const useDimensions = (props) => {
   const {
@@ -27,7 +23,12 @@ const useDimensions = (props) => {
     if (!staticDimension) {
       const dimension = horizontal ? 'height' : 'width';
       defaultTotalDimension = getAdjustedTotalDimensions({
-        totalDimension: Dimensions.get('window')[dimension], maxDimension, contentContainerStyle, style, horizontal, adjustGridToStyles,
+        totalDimension: Dimensions.get('window')[dimension],
+        maxDimension,
+        contentContainerStyle,
+        style,
+        horizontal,
+        adjustGridToStyles,
       });
     }
 
@@ -41,7 +42,12 @@ const useDimensions = (props) => {
         let newTotalDimension = horizontal ? height : width;
 
         newTotalDimension = getAdjustedTotalDimensions({
-          totalDimension: newTotalDimension, maxDimension, contentContainerStyle, style, horizontal, adjustGridToStyles,
+          totalDimension: newTotalDimension,
+          maxDimension,
+          contentContainerStyle,
+          style,
+          horizontal,
+          adjustGridToStyles,
         });
 
         if (totalDimension !== newTotalDimension && newTotalDimension > 0) {
@@ -54,22 +60,21 @@ const useDimensions = (props) => {
         onLayout(e);
       }
     },
-    [staticDimension, maxDimension, totalDimension, horizontal, onLayout, adjustGridToStyles],
+    [staticDimension, maxDimension, totalDimension, horizontal, onLayout, adjustGridToStyles, contentContainerStyle, style],
   );
-
 
   const { containerDimension, itemsPerRow, fixedSpacing } = useMemo(
-    () => calculateDimensions({
-      itemDimension,
-      staticDimension,
-      totalDimension,
-      spacing,
-      fixed,
-      maxItemsPerRow,
-    }),
+    () =>
+      calculateDimensions({
+        itemDimension,
+        staticDimension,
+        totalDimension,
+        spacing,
+        fixed,
+        maxItemsPerRow,
+      }),
     [itemDimension, staticDimension, totalDimension, spacing, fixed, maxItemsPerRow],
   );
-
 
   return {
     totalDimension,

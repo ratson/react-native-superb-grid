@@ -102,7 +102,7 @@ const SimpleGrid = memo<SimpleGridProps>(
         {rows.map((row, index) => (
           <View key={keyExtractor(row, index)} onLayout={onLayout}>
             {renderRow({
-              rowItems: row,
+              rowItems: row as never,
               rowIndex: index,
               isLastRow: index === rows.length - 1,
               itemsPerRow,

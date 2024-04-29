@@ -1,6 +1,6 @@
 import { type StyleProp, StyleSheet, type ViewStyle } from 'react-native';
 
-function chunkArray(array: Array<{ _fullWidth?: number }>, size: number) {
+function chunkArray<T extends { _fullWidth?: number }>(array: T[], size: number) {
   if (array.length === 0) return [];
 
   return array.reduce((acc, val) => {
@@ -16,7 +16,7 @@ function chunkArray(array: Array<{ _fullWidth?: number }>, size: number) {
       acc.push([val]);
     }
     return acc;
-  }, []);
+  }, [] as T[][]);
 }
 
 function calculateDimensions({ itemDimension, staticDimension, totalDimension, fixed, spacing, maxItemsPerRow }) {

@@ -4,6 +4,8 @@
   "description": "Responsive Grid View for React Native in TypeScript",
   "main": "lib/index.js",
   "types": "lib/index.d.ts",
+  "react-native": "src/index.ts",
+  "source": "src/index.ts",
   "scripts": {
     "prepublishOnly": "npm run build",
     "build": "tsc",

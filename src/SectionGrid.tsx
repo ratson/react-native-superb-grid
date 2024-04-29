@@ -33,7 +33,7 @@ export interface SectionGridProps<ItemType> extends SectionGridAllowedProps<Item
   customSectionList?: typeof SectionList;
 }
 
-function SectionGrid<T>(props: SectionGridProps<T>) {
+const SectionGrid = forwardRef(<T,>(props: SectionGridProps<T>, ref: React.Ref<SectionList<T>>) => {
   const {
     sections,
     style = {},
@@ -236,9 +236,10 @@ function SectionGrid<T>(props: SectionGridProps<T>) {
       sections={groupedSections}
       keyExtractor={localKeyExtractor as typeof keyExtractor}
       style={style}
+      ref={ref}
       {...restProps}
     />
   );
-}
+});
 
-export default memo(forwardRef(SectionGrid));
+export default memo(SectionGrid);

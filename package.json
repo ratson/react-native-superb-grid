@@ -1,13 +1,14 @@
 {
   "name": "react-native-superb-grid",
   "version": "0.0.0",
-  "description": "Responsive Grid View for React Native",
+  "description": "Responsive Grid View for React Native in TypeScript",
   "main": "lib/index.js",
   "types": "lib/index.d.ts",
   "scripts": {
     "prepublishOnly": "npm run build",
     "build": "tsc",
-    "lint": "eslint ."
+    "lint": "eslint .",
+    "test": "tsc --noEmit"
   },
   "peerDependencies": {
     "react": ">=16.8.6",

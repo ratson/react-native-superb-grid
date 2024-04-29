@@ -1,8 +1,8 @@
 import type React from 'react';
 import { useCallback } from 'react';
-import { type StyleProp, View, type ViewStyle } from 'react-native';
+import { type ListRenderItemInfo, type StyleProp, View, type ViewStyle } from 'react-native';
 
-function useRenderRow({
+function useRenderRow<T extends { _fullWidth?: number }>({
   renderItem,
   spacing,
   keyExtractor,
@@ -11,9 +11,13 @@ function useRenderRow({
   horizontal,
   invertedRow,
 }: {
-  renderItem: (props: { item; index: number; separators; rowIndex: number }) => React.ReactElement;
+  renderItem: (
+    props: ListRenderItemInfo<T> & {
+      rowIndex: number;
+    },
+  ) => React.ReactElement;
   spacing: number;
-  keyExtractor: (item, index: number) => string;
+  keyExtractor: (item: T, index: number) => string;
   externalRowStyle: StyleProp<ViewStyle>;
   itemContainerStyle: StyleProp<ViewStyle>;
   horizontal: boolean;
@@ -29,10 +33,9 @@ function useRenderRow({
       rowStyle,
       containerStyle,
       containerFullWidthStyle,
-    }: {
-      rowItems: Array<{ _fullWidth: number }>;
+    }: Partial<ListRenderItemInfo<T>> & {
+      rowItems: T[];
       rowIndex: number;
-      separators?: unknown;
       isLastRow: boolean;
       itemsPerRow: number;
       rowStyle: typeof externalRowStyle;
@@ -40,13 +43,11 @@ function useRenderRow({
       containerFullWidthStyle: StyleProp<ViewStyle>;
     }) => {
       // To make up for the top padding
-      let additionalRowStyle = {};
-      if (isLastRow) {
-        additionalRowStyle = {
-          ...(!horizontal ? { marginBottom: spacing } : {}),
-          ...(horizontal ? { marginRight: spacing } : {}),
-        };
-      }
+      const additionalRowStyle = isLastRow
+        ? {
+            [horizontal ? 'marginRight' : 'marginBottom']: spacing,
+          }
+        : {};
 
       const hasFullWidthItem = !!rowItems.find((i) => i._fullWidth);
 
